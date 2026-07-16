@@ -1,0 +1,29 @@
+# Netlify build + serving config.
+# Deploy by connecting this GitHub repo in Netlify (New site from Git) — do NOT
+# drag-and-drop the project folder, or you'll upload node_modules and it crawls.
+# Netlify runs the build below on its own servers from the committed source.
+
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "20"
+
+# Vite fingerprints these filenames, so they can be cached forever.
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+# The 3D scene + wasm are large and rarely change — cache a day, revalidate.
+[[headers]]
+  for = "/spline/*"
+  [headers.values]
+    Cache-Control = "public, max-age=86400, must-revalidate"
+
+# Single-page app: serve index.html for any path.
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
